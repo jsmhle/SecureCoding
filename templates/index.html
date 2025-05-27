@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deepfake Detection</title>
+</head>
+<body>
+    <h1>딥페이크 탐지기</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label>모델 선택:</label>
+        <select name="model_type">
+            <option value="b1">EfficientNet-B1</option>
+            <option value="v2s">EfficientNetV2-S</option>
+        </select>
+        <br><br>
+        <input type="file" name="image" required>
+        <input type="submit" value="업로드 및 예측">
+    </form>
+
+    {% if result %}
+        <h3>선택된 모델: {{ model }}</h3>
+        <h2>결과: {{ result }}</h2>
+        <img src="{{ url_for('static', filename='uploads/' + filename) }}" width="300">
+    {% endif %}
+</body>
+</html>
