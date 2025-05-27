@@ -18,7 +18,7 @@
 
     {% if result %}
         <h3>선택된 모델: {{ model }}</h3>
-        <h2>result: {{ result }}</h2>
+        <h2>결과: {{ result }}</h2>
         <img src="{{ url_for('static', filename='uploads/' + filename) }}" width="300">
     {% endif %}
 </body>
