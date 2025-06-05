@@ -1,25 +1,86 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ko">
 <head>
-    <title>Deepfake Detection</title>
+  <meta charset="UTF-8">
+  <title>딥페이크 탐지</title>
+  <style>
+    body {
+      font-family: 'Arial';
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #f4f4f4;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px #aaa;
+    }
+    img {
+      display: block;
+      margin: 15px auto;
+      border-radius: 8px;
+      max-width: 100%;
+      height: auto;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    select, input[type=file] {
+      width: 100%;
+      margin: 10px 0;
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
-    <h1>딥페이크 탐지기</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <label>모델 선택:</label>
-        <select name="model_type">
-            <option value="b1">EfficientNet-B1</option>
-            <option value="v2s">EfficientNetV2-S</option>
-        </select>
-        <br><br>
-        <input type="file" name="image" required>
-        <input type="submit" value="업로드 및 예측">
-    </form>
+  <h2>딥페이크 탐지기</h2>
+  <form method="POST" enctype="multipart/form-data">
+    <label>모델 선택:</label>
+    <select name="model_type" required>
+      <option value="b1" {% if model == 'B1' %}selected{% endif %}>EfficientNet-B1</option>
+      <option value="v2s" {% if model == 'V2S' %}selected{% endif %}>EfficientNet-V2S</option>
+    </select>
 
-    {% if result %}
-        <h3>선택된 모델: {{ model }}</h3>
-        <h2>결과: {{ result }}</h2>
-        <img src="{{ url_for('static', filename='uploads/' + filename) }}" width="300">
+    <label>이미지 업로드:</label>
+    <input type="file" name="image">
+    {% if filename %}
+      <input type="hidden" name="filename" value="{{ filename }}">
     {% endif %}
+
+    <button type="submit">탐지하기</button>
+  </form>
+
+  {% if result %}
+  <div class="result">
+    <h3>결과: {{ result }} (정확도: {{ confidence }})</h3>
+    <p>사용 모델: {{ model }}</p>
+    <img src="{{ url_for('static', filename='uploads/' ~ filename) }}">
+  </div>
+  {% endif %}
+
+  {% if gemini_opinion %}
+  <div class="result">
+    <h3>Gemini AI 의견:</h3>
+    <p>{{ gemini_opinion }}</p>
+  </div>
+  {% endif %}
 </body>
 </html>
