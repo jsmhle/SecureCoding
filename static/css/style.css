@@ -1,0 +1,487 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* 헤더 */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* 카드 */
+.main-card, .info-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.main-card {
+    padding: 2rem;
+}
+
+.info-card {
+    padding: 2rem;
+}
+
+/* 폼 */
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-section select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+}
+
+.form-section select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* 업로드 영역 */
+.upload-area {
+    border: 3px dashed #d1d5db;
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.upload-area:hover {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+}
+
+.upload-area.dragover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: scale(1.02);
+}
+
+.upload-area.has-file {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+#imageInput {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.upload-content i {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.upload-content p {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.upload-content small {
+    color: #6b7280;
+}
+
+/* 파일 정보 */
+.file-selected {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.file-selected i {
+    color: #3b82f6;
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+}
+
+.file-selected .file-name {
+    font-weight: 600;
+    color: #374151;
+}
+
+.file-selected .file-size {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.file-selected button {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* 버튼 */
+.submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn .btn-loading {
+    display: none;
+}
+
+.submit-btn.loading .btn-text {
+    display: none;
+}
+
+.submit-btn.loading .btn-loading {
+    display: inline;
+}
+
+/* 결과 영역 */
+.result-section {
+    border-top: 2px solid #f3f4f6;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    transition: all 0.6s ease;
+}
+
+.result-section h2 {
+    font-size: 1.5rem;
+    color: #374151;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.image-container {
+    background: #f9fafb;
+    border-radius: 15px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.model-info {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.model-info i {
+    margin-right: 0.5rem;
+}
+
+.result-badge {
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.result-badge.real {
+    color: #059669;
+    background: #d1fae5;
+    border: 2px solid #10b981;
+}
+
+.result-badge.fake {
+    color: #dc2626;
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+}
+
+/* 신뢰도 */
+.confidence-section {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.confidence-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 2s ease-in-out;
+    width: 0%;
+}
+
+.confidence-fill.real {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.confidence-fill.fake {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.confidence-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.confidence-level {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.confidence-level i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.text-green { color: #059669; }
+.text-yellow { color: #d97706; }
+.text-red { color: #dc2626; }
+
+.reset-btn {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+/* 에러 */
+.error-section {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.error-section i {
+    margin-right: 0.5rem;
+}
+
+/* 정보 카드 */
+.info-card h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.info-card p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.model-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.model-item {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.model-item h4 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.model-item p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* 알림 */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.error {
+    border-left: 4px solid #ef4444;
+}
+
+.notification.info {
+    border-left: 4px solid #3b82f6;
+}
+
+.notification i {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.notification.error i {
+    color: #ef4444;
+}
+
+.notification.info i {
+    color: #3b82f6;
+}
+
+.notification button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .model-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .main-card, .info-card {
+        padding: 1.5rem;
+    }
+    
+    .notification {
+        right: 10px;
+        left: 10px;
+    }
+}
