@@ -133,7 +133,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ✨ 결과 카드 UI 개선 ✨ */
         .result-image-container { text-align: center; margin-bottom: 1.5rem; }
         .result-image-container img { max-width: 100%; max-height: 400px; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
@@ -175,11 +174,16 @@
                         <div class="form-group">
                             <label for="model-select">1. Analysis Model</label>
                             <select name="model_type" id="model-select" required>
-                                <option value="" disabled {% if not selected_model %}selected{% endif %}>-- Select a model --</option>
-                                <option value="b1" {% if selected_model == 'b1' %}selected{% endif %}>EfficientNet-B1 (Fast)</option>
-                                <option value="v2s" {% if selected_model == 'v2s' %}selected{% endif %}>EfficientNet-V2S (Balanced)</option>
-                                <option value="ensemble" {% if selected_model == 'ensemble' %}selected{% endif %}>Advanced Ensemble (Eff+ViT+GCN)</option>
-                                <option value="soft_ensemble" {% if selected_model == 'soft_ensemble' %}selected{% endif %}>Soft Ensemble (High Accuracy)</option>
+                                <option value="" disabled {% if not selected_model %}selected{% endif %}>-- 분석 모델 선택 --</option>
+                                <optgroup label="Single Models">
+                                    <option value="b1" {% if selected_model == 'b1' %}selected{% endif %}>EfficientNet-B1 (속도 우선)</option>
+                                    <option value="v2s" {% if selected_model == 'v2s' %}selected{% endif %}>EfficientNet-V2S (밸런스)</option>
+                                    <option value="ensemble" {% if selected_model == 'ensemble' %}selected{% endif %}>Advanced Ensemble (Eff+ViT+GCN)</option>
+                                </optgroup>
+                                <optgroup label="Ensemble Methods (정확도 우선)">
+                                    <option value="ensemble_top2" {% if selected_model == 'ensemble_top2' %}selected{% endif %}>정밀 앙상블 (상위 2개 모델 종합)</option>
+                                    <option value="ensemble_all3" {% if selected_model == 'ensemble_all3' %}selected{% endif %}>궁극의 앙상블 (3개 모델 종합)</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div class="form-group">
@@ -220,7 +224,7 @@
                                 {{ confidence }}
                             </div>
                         </div>
-                        <p class="result-text {{ 'real' if result == 'Real' else 'fake' }}">{{ result }}</g>
+                        <p class="result-text {{ 'real' if result == 'Real' else 'fake' }}">{{ result }}</p>
                     </div>
                     <hr style="border:0; border-top: 1px solid rgba(128,128,128,0.1); margin: 1rem 0;">
                     <p><strong><i class="fa-solid fa-microchip"></i> Used Model:</strong> {{ model_display_name }}</p>
@@ -233,7 +237,7 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="card" style="text-align: center; padding: 4rem 2rem;">
+                <div class="card" style="text-align: center; padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px;">
                     <i class="fa-solid fa-flask" style="font-size: 3rem; color: var(--primary-color); opacity: 0.5;"></i>
                     <h3 style="border: none; padding: 0; margin-top: 1rem;">Analysis results will appear here.</h3>
                     <p style="color: #6c757d;">Please select a model and upload an image to begin.</p>
@@ -249,12 +253,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const themeToggle = document.getElementById('theme-toggle');
     const dropZone = document.getElementById('drop-zone');
     const imageUpload = document.getElementById('image-upload');
-    const imagePreviewContainer = document.querySelector('.result-section .card:first-child .result-image-container'); // Preview in result card
     const uploadForm = document.getElementById('upload-form');
     const loader = document.getElementById('loader');
     const dropZoneText = document.getElementById('drop-zone-text');
 
-    // --- Theme ---
+    // Theme Switcher
     const applyTheme = (theme) => {
         body.classList.toggle('dark-mode', theme === 'dark');
     };
@@ -268,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('theme', newTheme);
     });
 
-    // --- File Upload & Drag & Drop ---
+    // File Upload & Drag & Drop
     if (dropZone) {
         dropZone.addEventListener('click', () => imageUpload.click());
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -277,10 +280,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.stopPropagation();
             });
         });
-        dropZone.addEventListener('dragover', () => dropZone.style.borderColor = 'var(--primary-color)');
-        dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '');
+
+        dropZone.addEventListener('dragenter', () => dropZone.classList.add('drag-over'));
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
         dropZone.addEventListener('drop', e => {
-            dropZone.style.borderColor = '';
+            dropZone.classList.remove('drag-over');
             const files = e.dataTransfer.files;
             if (files.length > 0 && files[0].type.startsWith('image/')) {
                 imageUpload.files = files;
@@ -298,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dropZoneText.innerHTML = `<i class="fa-solid fa-file-image"></i> ${fileName}`;
     }
 
-    // --- Form Submission Loader ---
+    // Form Submission Loader
     if(uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
             const modelSelect = document.getElementById('model-select');
@@ -316,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Result Animations ---
+    // Result Animations
     {% if result %}
         // Progress Ring
         const progressRing = document.getElementById('progress-ring');
