@@ -11,18 +11,19 @@
     <style>
         :root {
             --bg-light: #F0F2F5;
-            --bg-dark: #121212;
-            --card-light: rgba(255, 255, 255, 0.7);
-            --card-dark: rgba(30, 30, 30, 0.7);
+            --bg-dark: #101418;
+            --card-light: rgba(255, 255, 255, 0.6);
+            --card-dark: rgba(28, 33, 39, 0.7);
             --text-light: #212529;
-            --text-dark: #EAEAEA;
-            --border-light: rgba(255, 255, 255, 0.9);
-            --border-dark: rgba(50, 50, 50, 0.9);
-            --primary-color: #007BFF;
-            --success-color: #28a745;
+            --text-dark: #EAECEF;
+            --border-light: rgba(0, 0, 0, 0.1);
+            --border-dark: rgba(255, 255, 255, 0.2);
+            --primary-color: #0d6efd;
+            --success-color: #198754;
             --danger-color: #dc3545;
-            --font-family: 'Pretendard', sans-serif;
+            --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            --radius: 1rem;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -38,44 +39,30 @@
             color: var(--text-light);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, #dbeafe 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, #dbeafe 0%, transparent 40%);
         }
         
-        .aurora-background {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; filter: blur(80px) saturate(1.5); opacity: 0.6;
-        }
-        .aurora-background div {
-            position: absolute; border-radius: 50%;
-            animation: move 25s infinite alternate;
-        }
-        .aurora-background .shape1 {
-            width: 450px; height: 450px; background: #007BFF;
-            top: 5%; left: 10%; animation-duration: 28s;
-        }
-        .aurora-background .shape2 {
-            width: 400px; height: 400px; background: #8A2BE2;
-            bottom: 5%; right: 10%; animation-duration: 22s;
-        }
-        
-        @keyframes move {
-            from { transform: translate(0, 0) rotate(0deg) scale(1); }
-            to { transform: translate(100px, 50px) rotate(45deg) scale(1.1); }
-        }
-
         body.dark-mode {
             background-color: var(--bg-dark);
             color: var(--text-dark);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(13, 110, 253, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(108, 99, 255, 0.3) 0%, transparent 40%);
         }
 
-        .container { max-width: 1100px; margin: auto; position: relative; z-index: 1; }
+        .container { max-width: 1200px; margin: auto; position: relative; z-index: 1; }
 
         .card {
             background: var(--card-light);
             border: 1px solid var(--border-light);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 1rem; margin-bottom: 1.5rem;
-            box-shadow: var(--shadow); padding: 2rem;
-            transition: all 0.3s;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            transition: all 0.3s ease;
         }
         body.dark-mode .card {
             background: var(--card-dark);
@@ -83,36 +70,38 @@
         }
         
         header { text-align: center; margin-bottom: 2rem; position: relative; }
-        header h1 { font-weight: 800; font-size: 2.5rem; }
+        header h1 { font-weight: 800; font-size: 2.5rem; letter-spacing: -1px; }
         
         .theme-switch {
             position: absolute; top: 10px; right: 10px; width: 50px; height: 26px;
             background: #343a40; border-radius: 13px; cursor: pointer; padding: 3px;
+            transition: background-color 0.3s;
         }
-        body.dark-mode .theme-switch { background: #f8f9fa; }
+        body.dark-mode .theme-switch { background: #dee2e6; }
         .theme-switch .toggle-ball {
             width: 20px; height: 20px; background: white; border-radius: 50%;
-            transition: transform 0.3s;
+            transition: transform 0.3s ease, background-color 0.3s;
         }
         body.dark-mode .theme-switch .toggle-ball { background: #343a40; transform: translateX(24px); }
 
-        .main-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: flex-start; }
         
-        .card h3 { margin-top: 0; font-size: 1.5rem; font-weight: 700; }
+        .card h3 { margin-top: 0; font-size: 1.5rem; font-weight: 700; border-left: 4px solid var(--primary-color); padding-left: 1rem; }
 
         .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.75rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.75rem; font-size: 1.1rem;}
         .form-group select, .form-group input {
-            width: 100%; padding: 0.8rem; border: 1px solid #ced4da;
+            width: 100%; padding: 0.8rem 1rem; border: 1px solid #ced4da;
             background: rgba(255, 255, 255, 0.5);
-            border-radius: 0.5rem; font-size: 1rem; color: inherit;
+            border-radius: 0.5rem; font-size: 1rem; color: inherit; font-family: inherit;
         }
         body.dark-mode .form-group select, body.dark-mode .form-group input { border-color: #495057; background: rgba(0,0,0,0.2); }
         
         .drop-zone {
-            border: 2px dashed #adb5bd; padding: 2rem; text-align: center; cursor: pointer;
-            border-radius: 0.5rem; transition: all 0.3s;
+            border: 2px dashed #adb5bd; padding: 2.5rem; text-align: center; cursor: pointer;
+            border-radius: 0.5rem; transition: all 0.3s; background-color: rgba(0,0,0,0.02);
         }
+        .drop-zone:hover { background-color: rgba(0, 123, 255, 0.05); }
         .drop-zone.drag-over { border-style: solid; background: rgba(0, 123, 255, 0.1); }
         #image-upload { display: none; }
         #image-preview img { max-width: 100%; margin-top: 1rem; border-radius: 0.5rem; }
@@ -121,9 +110,9 @@
             width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 700;
             background: var(--primary-color);
             color: white; border: none; border-radius: 0.5rem; cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
         }
-        .submit-btn:hover { background-color: #0056b3; transform: translateY(-2px); }
+        .submit-btn:hover { background-color: #0056b3; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
 
         .upload-card { position: relative; }
         .loader-overlay {
@@ -131,7 +120,7 @@
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
             display: none; align-items: center; justify-content: center;
-            flex-direction: column; gap: 1rem; border-radius: 1rem;
+            flex-direction: column; gap: 1rem; border-radius: var(--radius);
             font-size: 1.2rem; font-weight: 500;
         }
         body.dark-mode .loader-overlay { background: rgba(0,0,0,0.8); }
@@ -143,35 +132,39 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ✨ 결과 카드 UI 개선 ✨ */
+        .result-image-container { text-align: center; margin-bottom: 1.5rem; }
+        .result-image-container img { max-width: 100%; max-height: 400px; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        .confidence-display { text-align: center; margin-bottom: 1.5rem; }
-        .progress-ring { position: relative; width: 160px; height: 160px; }
+        .confidence-display { text-align: center; margin-bottom: 1rem; }
+        .progress-ring { position: relative; width: 140px; height: 140px; margin: auto;}
         .progress-ring svg { transform: rotate(-90deg); }
         .progress-ring circle { transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1); }
         .progress-value {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.2rem; font-weight: 700;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 2rem; font-weight: 700;
         }
-        .result-text { font-size: 1.8rem; font-weight: 700; text-align: center; margin-top: -1rem; }
+        .result-text { font-size: 2rem; font-weight: 800; text-align: center; margin-top: 1rem; }
         .result-text.real { color: var(--success-color); }
         .result-text.fake { color: var(--danger-color); }
+        .gemini-opinion {
+            background: rgba(0,0,0,0.03); padding: 1rem; border-radius: 0.5rem;
+            border-left: 4px solid #6c757d; font-style: italic;
+        }
+        body.dark-mode .gemini-opinion { background: rgba(255,255,255,0.05); }
 
         @media (max-width: 992px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="aurora-background">
-        <div class="shape1"></div>
-        <div class="shape2"></div>
-    </div>
-
     <div class="container">
         <header>
             <div class="theme-switch" id="theme-toggle">
                 <div class="toggle-ball"></div>
             </div>
             <h1><i class="fa-solid fa-robot"></i> AI Deepfake Detection</h1>
+            <p style="font-size: 1.1rem; color: #6c757d;">Upload an image to determine if it is a deepfake.</p>
         </header>
 
         <div class="main-grid">
@@ -183,34 +176,25 @@
                             <label for="model-select">1. Analysis Model</label>
                             <select name="model_type" id="model-select" required>
                                 <option value="" disabled {% if not selected_model %}selected{% endif %}>-- Select a model --</option>
-                                <option value="b1" {% if selected_model == 'b1' %}selected{% endif %}>EfficientNet-B1</option>
-                                <option value="v2s" {% if selected_model == 'v2s' %}selected{% endif %}>EfficientNet-V2S</option>
+                                <option value="b1" {% if selected_model == 'b1' %}selected{% endif %}>EfficientNet-B1 (Fast)</option>
+                                <option value="v2s" {% if selected_model == 'v2s' %}selected{% endif %}>EfficientNet-V2S (Balanced)</option>
                                 <option value="ensemble" {% if selected_model == 'ensemble' %}selected{% endif %}>Advanced Ensemble (Eff+ViT+GCN)</option>
+                                <option value="soft_ensemble" {% if selected_model == 'soft_ensemble' %}selected{% endif %}>Soft Ensemble (High Accuracy)</option>
                             </select>
                         </div>
                         <div class="form-group">
                              <label for="image-upload">2. Image File Upload</label>
                              <input type="file" name="image" id="image-upload" accept="image/*" required>
                              <label for="image-upload" class="drop-zone" id="drop-zone">
-                                <p id="drop-zone-text">Click to select or drop file here</p>
+                                 <p id="drop-zone-text"><i class="fa-solid fa-cloud-arrow-up"></i> Click or drop file here</p>
                              </label>
                         </div>
                         <button type="submit" class="submit-btn"><i class="fa-solid fa-magnifying-glass-chart"></i> Start Analysis</button>
                     </form>
                     <div class="loader-overlay" id="loader">
                         <i class="fas fa-spinner"></i>
-                        <p>Analyzing...</p>
+                        <p>Analyzing... Please wait.</p>
                     </div>
-                </div>
-                <div class="card">
-                     <h3><i class="fa-solid fa-image"></i> Image Preview</h3>
-                     <div id="image-preview" style="min-height: 200px; display:flex; align-items:center; justify-content:center;">
-                        {% if filename %}
-                            <img src="{{ url_for('static', filename='uploads/' ~ filename) }}" alt="업로드된 이미지">
-                        {% else %}
-                            <p style="color: #6c757d;">Image will be shown here after upload</p>
-                        {% endif %}
-                     </div>
                 </div>
             </section>
 
@@ -218,9 +202,14 @@
                 {% if result %}
                 <div class="card result-card">
                     <h3><i class="fa-solid fa-square-poll-vertical"></i> Model Analysis Report</h3>
+                    
+                    <div class="result-image-container">
+                         <img src="data:image/jpeg;base64,{{ img_data }}" alt="분석된 이미지">
+                    </div>
+
                     <div class="confidence-display">
                         <div class="progress-ring">
-                            <svg width="160" height="160" viewBox="0 0 120 120">
+                            <svg width="140" height="140" viewBox="0 0 120 120">
                                 <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(128,128,128,0.2)" stroke-width="12"/>
                                 <circle id="progress-ring" cx="60" cy="60" r="54" fill="none"
                                     stroke="{{ 'var(--success-color)' if result == 'Real' else 'var(--danger-color)' }}"
@@ -231,19 +220,23 @@
                                 {{ confidence }}
                             </div>
                         </div>
-                        <p class="result-text {{ 'real' if result == 'Real' else 'fake' }}">{{ result }}</p>
+                        <p class="result-text {{ 'real' if result == 'Real' else 'fake' }}">{{ result }}</g>
                     </div>
-                    <hr style="border:0; border-top: 1px solid rgba(128,128,128,0.2); margin: 1.5rem 0;">
+                    <hr style="border:0; border-top: 1px solid rgba(128,128,128,0.1); margin: 1rem 0;">
                     <p><strong><i class="fa-solid fa-microchip"></i> Used Model:</strong> {{ model_display_name }}</p>
                 </div>
-                {% endif %}
 
-                {% if gemini_opinion %}
                 <div class="card result-card" style="animation-delay: 0.2s;">
                     <h3><i class="fa-solid fa-brain"></i> Gemini AI Expert Opinion</h3>
                     <div class="gemini-opinion">
                         <p>{{ gemini_opinion.replace('결론:', '<strong>결론:</strong>').replace('이유:', '<br><strong>이유:</strong>') | safe }}</p>
                     </div>
+                </div>
+                {% else %}
+                <div class="card" style="text-align: center; padding: 4rem 2rem;">
+                    <i class="fa-solid fa-flask" style="font-size: 3rem; color: var(--primary-color); opacity: 0.5;"></i>
+                    <h3 style="border: none; padding: 0; margin-top: 1rem;">Analysis results will appear here.</h3>
+                    <p style="color: #6c757d;">Please select a model and upload an image to begin.</p>
                 </div>
                 {% endif %}
             </section>
@@ -256,10 +249,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const themeToggle = document.getElementById('theme-toggle');
     const dropZone = document.getElementById('drop-zone');
     const imageUpload = document.getElementById('image-upload');
-    const imagePreview = document.getElementById('image-preview');
-    const dropZoneText = document.getElementById('drop-zone-text');
+    const imagePreviewContainer = document.querySelector('.result-section .card:first-child .result-image-container'); // Preview in result card
     const uploadForm = document.getElementById('upload-form');
     const loader = document.getElementById('loader');
+    const dropZoneText = document.getElementById('drop-zone-text');
 
     // --- Theme ---
     const applyTheme = (theme) => {
@@ -268,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const storedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(storedTheme || (prefersDark ? 'dark' : 'light'));
+    
     themeToggle.addEventListener('click', () => {
         const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
         applyTheme(newTheme);
@@ -288,34 +282,35 @@ document.addEventListener('DOMContentLoaded', function () {
         dropZone.addEventListener('drop', e => {
             dropZone.style.borderColor = '';
             const files = e.dataTransfer.files;
-            if (files.length) {
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
                 imageUpload.files = files;
-                displayPreview(files[0]);
+                updateDropZoneText(files[0].name);
             }
         });
         imageUpload.addEventListener('change', () => {
-            if (imageUpload.files.length) displayPreview(imageUpload.files[0]);
+            if (imageUpload.files.length > 0) {
+                updateDropZoneText(imageUpload.files[0].name);
+            }
         });
     }
 
-    function displayPreview(file) {
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-            }
-            reader.readAsDataURL(file);
-            dropZoneText.textContent = file.name;
-        }
+    function updateDropZoneText(fileName) {
+        dropZoneText.innerHTML = `<i class="fa-solid fa-file-image"></i> ${fileName}`;
     }
 
     // --- Form Submission Loader ---
     if(uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
+            const modelSelect = document.getElementById('model-select');
+            if (!modelSelect.value) {
+                 e.preventDefault();
+                 alert('분석 모델을 선택해주세요.');
+                 return;
+            }
             if (imageUpload.files.length > 0) {
                 loader.style.display = 'flex';
             } else {
-                e.preventDefault(); // 파일이 없으면 제출 방지
+                e.preventDefault(); 
                 alert('이미지 파일을 선택해주세요.');
             }
         });
@@ -327,8 +322,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const progressRing = document.getElementById('progress-ring');
         if(progressRing) {
             const confidence = parseFloat('{{ confidence }}'.replace('%', ''));
-            const circumference = 2 * Math.PI * 54;
+            const radius = progressRing.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
             const offset = circumference - (confidence / 100) * circumference;
+            
+            progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
             setTimeout(() => progressRing.style.strokeDashoffset = offset, 100);
         }
 
