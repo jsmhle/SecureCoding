@@ -1,2 +1,4 @@
-EfficientNetV2S_ViT_GCN_ensemble.pth
+venv/
+__pycache__/
+.DS_Store
 *.pth
