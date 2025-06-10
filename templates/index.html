@@ -57,10 +57,11 @@
     <select name="model_type" required>
       <option value="b1" {% if model == 'B1' %}selected{% endif %}>EfficientNet-B1</option>
       <option value="v2s" {% if model == 'V2S' %}selected{% endif %}>EfficientNet-V2S</option>
+      <option value="ensemble" {% if model == 'ENSEMBLE' %}selected{% endif %}>EfficientNetV2S + ViT + GCN (Ensemble)</option>
     </select>
 
     <label>이미지 업로드:</label>
-    <input type="file" name="image">
+    <input type="file" name="image" required>
     {% if filename %}
       <input type="hidden" name="filename" value="{{ filename }}">
     {% endif %}

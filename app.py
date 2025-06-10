@@ -6,6 +6,7 @@ from PIL import Image
 from flask import Flask, request, render_template
 from model_b1 import build_model as build_b1
 from model_v2s import build_model as build_v2s
+from ensemble_model import EnsembleModel
 from torchvision.models import EfficientNet_B1_Weights, EfficientNet_V2_S_Weights
 from torch.amp import autocast
 import base64
@@ -19,12 +20,18 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# 📌 전처리
+# 📌 전처리 설정
 weights_b1 = EfficientNet_B1_Weights.DEFAULT
 weights_v2s = EfficientNet_V2_S_Weights.DEFAULT
 transforms_dict = {
     'b1': weights_b1.transforms(),
-    'v2s': weights_v2s.transforms()
+    'v2s': weights_v2s.transforms(),
+    'ensemble': transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406],
+                             [0.229, 0.224, 0.225])
+    ])
 }
 
 # 🔍 Gemini API 호출
@@ -32,7 +39,6 @@ def ask_gemini_about_image(image_path):
     try:
         with open(image_path, "rb") as f:
             img_data = base64.b64encode(f.read()).decode("utf-8")
-
         prompt = (
             "너는 딥페이크 이미지 탐지 전문가 AI다.\n"
             "아래 이미지를 보고 '딥페이크인지 아닌지'를 판단해라.\n\n"
@@ -42,23 +48,14 @@ def ask_gemini_about_image(image_path):
             "답변 형식:\n"
             "결론: 딥페이크다 / 딥페이크가 아니다\n이유: (한두 문장)"
         )
-
         payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": prompt},
-                        {
-                            "inline_data": {
-                                "mime_type": "image/jpeg",
-                                "data": img_data
-                            }
-                        }
-                    ]
-                }
-            ]
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {"inline_data": {"mime_type": "image/jpeg", "data": img_data}}
+                ]
+            }]
         }
-
         response = requests.post(GEMINI_ENDPOINT, json=payload)
         response.raise_for_status()
         data = response.json()
@@ -75,6 +72,9 @@ def load_model(model_type):
     elif model_type == 'v2s':
         model = build_v2s()
         model.load_state_dict(torch.load("deepfake_model_v2s.pth", map_location=device))
+    elif model_type == 'ensemble':
+        model = EnsembleModel()
+        model.load_state_dict(torch.load("EfficientNetV2S_ViT_GCN_ensemble.pth", map_location=device))
     else:
         raise ValueError("지원하지 않는 모델 유형입니다.")
     model.to(device)
@@ -84,50 +84,36 @@ def load_model(model_type):
 # 🌐 라우팅
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    filename = None
-    result = None
-    confidence = None
-    gemini_opinion = None
+    filename, result, confidence, gemini_opinion = None, None, None, None
+    model_type = request.form.get('model_type') if request.method == 'POST' else None
 
     if request.method == 'POST':
         file = request.files.get('image')
-        filename = request.form.get('filename')
+        filename = file.filename
+        img_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(img_path)
 
-        if file and file.filename:
-            filename = file.filename
-            img_path = os.path.join(UPLOAD_FOLDER, filename)
-            file.save(img_path)
+        image = Image.open(img_path).convert('RGB')
+        transform = transforms_dict.get(model_type)
+        image_tensor = transform(image).unsqueeze(0)
 
-        if filename:
-            img_path = os.path.join(UPLOAD_FOLDER, filename)
-            image = Image.open(img_path).convert('RGB')
+        model, device = load_model(model_type)
+        image_tensor = image_tensor.to(device)
 
-            # 두 모델 전처리 및 입력
-            image_b1 = transforms_dict['b1'](image).unsqueeze(0)
-            image_v2s = transforms_dict['v2s'](image).unsqueeze(0)
+        with torch.no_grad(), autocast(device_type='cuda'):
+            output = model(image_tensor)
+            probs = F.softmax(output, dim=1)
+            pred = torch.argmax(probs, dim=1).item()
+            confidence = f"{probs[0][pred].item() * 100:.2f}%"
+            result = "Fake" if pred == 1 else "Real"
 
-            # 모델 로딩
-            model_b1, device = load_model('b1')
-            model_v2s, _ = load_model('v2s')
-            image_b1 = image_b1.to(device)
-            image_v2s = image_v2s.to(device)
-
-            with torch.no_grad(), autocast(device_type='cuda'):
-                out_b1 = F.softmax(model_b1(image_b1), dim=1)
-                out_v2s = F.softmax(model_v2s(image_v2s), dim=1)
-                avg_probs = (out_b1 + out_v2s) / 2
-                pred = torch.argmax(avg_probs, dim=1).item()
-                confidence = f"{avg_probs[0][pred].item() * 100:.2f}%"
-                result = "Fake" if pred == 1 else "Real"
-
-            # Gemini 판단
-            gemini_opinion = ask_gemini_about_image(img_path)
+        gemini_opinion = ask_gemini_about_image(img_path)
 
     return render_template('index.html',
                            result=result,
                            confidence=confidence,
                            filename=filename,
-                           model="Ensemble",
+                           model=model_type.upper() if model_type else None,
                            gemini_opinion=gemini_opinion)
 
 if __name__ == '__main__':
